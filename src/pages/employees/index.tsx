@@ -1,7 +1,5 @@
 import EmployeesList from '@/components/sections/EmployeesList';
 
-const EmployeesListPage = () => {
+export default function EmployeesListPage() {
   return <EmployeesList />;
-};
-
-export default EmployeesListPage;
+}

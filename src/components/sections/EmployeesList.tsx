@@ -1,5 +1,9 @@
+import { useDebounce } from '@/hooks/useDebounce';
+import { useGetEployeesList } from '@/hooks/useEmployees';
+import { EmployeeResponse } from '@/types/response';
 import { Search } from '@mui/icons-material';
 import {
+  Alert,
   Box,
   Card,
   Container,
@@ -9,51 +13,53 @@ import {
   Typography,
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import { useState, ChangeEvent } from 'react';
-
-const TABLE_DATA = [...Array(50)].map((_, index) => ({
-  id: index,
-  title: `Title ${index}`,
-}));
+import { useState, ChangeEvent, useEffect } from 'react';
 
 interface CellType {
-  //   TODO: Implement type
-  row: any;
+  row: EmployeeResponse;
 }
 
 type Column = {
   field: string;
   headerName: string;
-  renderCell: ({ row }: CellType) => JSX.Element;
+  renderCell: (row: CellType) => JSX.Element;
 };
 
 export const columns = [
   {
-    field: 'employeeId',
+    field: 'id',
     headerName: 'Employee Id',
     renderCell: ({ row }: CellType) => {
-      const postId = row?.id;
-
       return (
         <Typography noWrap sx={{ textDecoration: 'none' }}>
-          {postId}
+          {row?.id}
         </Typography>
       );
     },
   },
   {
     flex: 1,
-    field: 'title',
-    headerName: 'Title',
+    field: 'name',
+    headerName: 'Employee name',
     renderCell: ({ row }: CellType) => {
-      const postTitle = row?.title;
-      const postId = row?.id;
       return (
         <Link href={``}>
           <Typography noWrap sx={{ textDecoration: 'none' }}>
-            {postTitle}
+            {row?.name}
           </Typography>
         </Link>
+      );
+    },
+  },
+  {
+    flex: 1,
+    field: 'age',
+    headerName: 'Age',
+    renderCell: ({ row }: CellType) => {
+      return (
+        <Typography noWrap sx={{ textDecoration: 'none' }}>
+          {row?.age}
+        </Typography>
       );
     },
   },
@@ -64,17 +70,45 @@ const EmployeesList = () => {
   const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState<string>();
 
+  const debouncedString = useDebounce(search, 500);
+
+  const {
+    data: employeesResponse,
+    isLoading: isLoadingEmployees,
+    refetch: refetchEmployees,
+    error: employeesError,
+  } = useGetEployeesList({ page, limit: pageSize, search: debouncedString });
+
+  const { data } = employeesResponse ?? {};
+
+  const employeesData = data?.results ?? [];
+
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
   };
 
+  useEffect(() => {
+    refetchEmployees();
+  }, [page, debouncedString, pageSize]);
+
   return (
     <Container maxWidth="lg">
       <Grid item xs={12}>
-        <Box display="flex" width="100%" justifyContent="end">
+        {employeesError && (
+          <Alert
+            severity="error"
+            sx={{
+              marginBottom: '1.5rem',
+            }}
+          >
+            {employeesError?.message}
+          </Alert>
+        )}
+        <Box width="100%" maxWidth={300} marginLeft="auto">
           <TextField
             type="search"
-            label="Search Employees"
+            label="Search employees by name"
+            fullWidth
             sx={{
               marginBottom: '1.5rem',
             }}
@@ -87,22 +121,22 @@ const EmployeesList = () => {
         <Card>
           <DataGrid
             autoHeight
-            rows={TABLE_DATA}
+            rows={employeesData}
             getRowId={(row) => row.id}
             columns={columns}
-            loading={false}
-            rowCount={10}
-            page={0}
-            pageSize={10}
+            loading={isLoadingEmployees}
+            rowCount={data?.totalElements ?? 0}
+            page={page - 1}
+            pageSize={pageSize}
             rowsPerPageOptions={[10, 20, 50]}
-            // filterMode="server"
+            filterMode="server"
             sx={{
               '& .MuiDataGrid-columnHeaders': { borderRadius: 0 },
               padding: '1rem',
             }}
             onPageSizeChange={(newPageSize: number) => setPageSize(newPageSize)}
             onPageChange={(newPage: number) => setPage(newPage + 1)}
-            // paginationMode="server"
+            paginationMode="server"
           />
         </Card>
       </Grid>

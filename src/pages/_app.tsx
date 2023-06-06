@@ -12,6 +12,7 @@ import createEmotionCache from '../utils/createEmotionCache';
 import lightThemeOptions from '../styles/theme/lightThemeOptions';
 import '../styles/globals.css';
 import Layout from '@/components/layout';
+import { QueryClient, QueryClientProvider } from 'react-query';
 interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
 }
@@ -20,18 +21,23 @@ const clientSideEmotionCache = createEmotionCache();
 
 const lightTheme = createTheme(lightThemeOptions);
 
+// Create react query client
+const queryClient = new QueryClient();
+
 const MyApp: React.FunctionComponent<MyAppProps> = (props) => {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
 
   return (
-    <CacheProvider value={emotionCache}>
-      <ThemeProvider theme={lightTheme}>
-        <CssBaseline />
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
-      </ThemeProvider>
-    </CacheProvider>
+    <QueryClientProvider client={queryClient}>
+      <CacheProvider value={emotionCache}>
+        <ThemeProvider theme={lightTheme}>
+          <CssBaseline />
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </ThemeProvider>
+      </CacheProvider>
+    </QueryClientProvider>
   );
 };
 

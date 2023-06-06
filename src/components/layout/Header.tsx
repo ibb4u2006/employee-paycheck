@@ -9,6 +9,7 @@ const Header = () => {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
+          flexWrap: 'wrap',
         }}
       >
         <Typography variant="h4" component="h1">
