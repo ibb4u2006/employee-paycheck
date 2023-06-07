@@ -20,6 +20,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { array, number, object, string, TypeOf } from 'zod';
+import InputDependents from '../common/InputDependents';
 
 // ? Update employee Schema with Zod
 const updateEmployeeSchema = object({
@@ -28,10 +29,13 @@ const updateEmployeeSchema = object({
   phone: string().min(1, 'Phone is required'),
   address: string().min(1, 'Address is required'),
   bio: string().min(1, 'Bio is required'),
-  age: number().min(1, 'Age is required'),
-  gross: number().min(1, 'Gross paycheck is required'),
+  age: number().refine((value) => !isNaN(value), 'Age is required'),
+  gross: number().refine(
+    (value) => !isNaN(value),
+    'Gross paycheck is required'
+  ),
   benefits: array(string()).min(1, 'Benefit is required'),
-  //   dependendents: array(string()),
+  dependents: array(string()),
 });
 
 // ? Infer the Schema to get the TS Type
@@ -46,8 +50,9 @@ const EmployeeDetail: React.FC<EmployeeDetailProps> = ({ data, onRefetch }) => {
   // ? Default Values
   const defaultValues: EmployeeResponse = { ...data };
 
-  const { mutateAsync, mutate, isLoading, error, isSuccess } =
-    useUpdateEmployeeDetail(data.id);
+  const { mutateAsync, isLoading, error, isSuccess } = useUpdateEmployeeDetail(
+    data.id
+  );
 
   const [benefits, setBenefits] = useState<string[]>(data.benefits);
 
@@ -61,8 +66,13 @@ const EmployeeDetail: React.FC<EmployeeDetailProps> = ({ data, onRefetch }) => {
     );
   };
 
+  const handleDependentsChange = (dependents: string[]) => {
+    setValue('dependents', dependents);
+  };
+
   // ? The object returned from useForm Hook
   const {
+    getValues,
     setValue,
     register,
     handleSubmit,
@@ -252,7 +262,7 @@ const EmployeeDetail: React.FC<EmployeeDetailProps> = ({ data, onRefetch }) => {
                 type="number"
                 label="Age"
                 error={!!errors.age?.message ?? false}
-                {...register('age')}
+                {...register('age', { valueAsNumber: true })}
               />
               {(!!errors.age?.message ?? false) && (
                 <FormHelperText id="component-error-text" error>
@@ -279,7 +289,7 @@ const EmployeeDetail: React.FC<EmployeeDetailProps> = ({ data, onRefetch }) => {
                   <InputAdornment position="start">$</InputAdornment>
                 }
                 error={!!errors.gross?.message ?? false}
-                {...register('gross')}
+                {...register('gross', { valueAsNumber: true })}
               />
               {(!!errors.gross?.message ?? false) && (
                 <FormHelperText id="component-error-text" error>
@@ -303,7 +313,6 @@ const EmployeeDetail: React.FC<EmployeeDetailProps> = ({ data, onRefetch }) => {
                 id="benefits"
                 multiple
                 value={benefits}
-                // onChange={handleBenefitChange}
                 input={<OutlinedInput label="Benefits" />}
                 renderValue={(selected) => selected.join(', ')}
                 {...(register('benefits'), { onChange: handleBenefitChange })}
@@ -318,6 +327,26 @@ const EmployeeDetail: React.FC<EmployeeDetailProps> = ({ data, onRefetch }) => {
               {(!!errors.benefits?.message ?? false) && (
                 <FormHelperText id="component-error-text" error>
                   {errors.benefits?.message}
+                </FormHelperText>
+              )}
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12}>
+            <FormControl
+              variant="outlined"
+              sx={{
+                width: '100%',
+                mb: '1.5rem',
+              }}
+            >
+              <InputDependents
+                data={getValues('dependents')}
+                onAddDependents={handleDependentsChange}
+              />
+              {(!!errors.dependents?.message ?? false) && (
+                <FormHelperText id="component-error-text" error>
+                  {errors.dependents?.message}
                 </FormHelperText>
               )}
             </FormControl>

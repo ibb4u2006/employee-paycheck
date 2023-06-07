@@ -21,23 +21,13 @@ interface CellType {
 }
 
 type Column = {
+  flex: number;
   field: string;
   headerName: string;
   renderCell: (row: CellType) => JSX.Element;
 };
 
 export const columns = [
-  {
-    field: 'id',
-    headerName: 'Employee Id',
-    renderCell: ({ row }: CellType) => {
-      return (
-        <Typography noWrap sx={{ textDecoration: 'none' }}>
-          {row?.id}
-        </Typography>
-      );
-    },
-  },
   {
     flex: 1,
     field: 'name',
@@ -54,12 +44,24 @@ export const columns = [
   },
   {
     flex: 1,
-    field: 'age',
-    headerName: 'Age',
+    field: 'company',
+    headerName: 'Company',
     renderCell: ({ row }: CellType) => {
       return (
         <Typography noWrap sx={{ textDecoration: 'none' }}>
-          {row?.age}
+          {row?.company}
+        </Typography>
+      );
+    },
+  },
+  {
+    flex: 2,
+    field: 'dependents',
+    headerName: 'Dependents',
+    renderCell: ({ row }: CellType) => {
+      return (
+        <Typography noWrap sx={{ textDecoration: 'none' }}>
+          {row?.dependents.join(', ')}
         </Typography>
       );
     },
