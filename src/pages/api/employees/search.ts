@@ -1,21 +1,13 @@
 // pages/api/search.ts
 
 import { EmployeeResponse, EmployeeResponsePage } from '@/types/response';
+import { getData } from '@/utils/server';
 import { NextApiRequest, NextApiResponse } from 'next';
-import path from 'path';
-import { readFile } from 'node:fs/promises';
-
-const employeeFilePath = path.join(
-  process.cwd(),
-  'src/constants/mocked-api/employee.json'
-);
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    // Get mock data from local storage or initialize it
     // Read the existing data from the JSON file
-    const jsonData = await readFile(employeeFilePath, { encoding: 'utf8' });
-    let data: EmployeeResponse[] = JSON.parse(jsonData);
+    let data: EmployeeResponse[] = await getData();
 
     // Get pagination parameters from query string
     const page = Number(req.query.page) || 1;
@@ -52,6 +44,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     };
 
     res.status(200).json(response);
+    // TODO: Implement error type
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }

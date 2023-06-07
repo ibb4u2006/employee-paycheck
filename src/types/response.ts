@@ -17,19 +17,10 @@ export type EmployeeResponse = {
   address: string;
   bio: string;
   joined: string;
-  dependents: Dependent[];
+  dependents: string[];
 };
 
-export type Benefit = {
-  id: number;
-  name: 'healthcare' | 'retirement' | 'wellness';
-  cost: number;
-};
-
-export type Dependent = {
-  id: number;
-  name: string;
-};
+export type Benefit = 'healthcare' | 'retirement' | 'wellness';
 
 export type RequestParams = {
   page: number;

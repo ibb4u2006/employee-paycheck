@@ -1,5 +1,6 @@
+import { PAGE_ROUTES } from '@/constants/routes';
 import { useDebounce } from '@/hooks/useDebounce';
-import { useGetEployeesList } from '@/hooks/useEmployees';
+import { useGetEmployeesList } from '@/hooks/useEmployees';
 import { EmployeeResponse } from '@/types/response';
 import { Search } from '@mui/icons-material';
 import {
@@ -43,7 +44,7 @@ export const columns = [
     headerName: 'Employee name',
     renderCell: ({ row }: CellType) => {
       return (
-        <Link href={``}>
+        <Link href={PAGE_ROUTES.employeeDetail(row.id)}>
           <Typography noWrap sx={{ textDecoration: 'none' }}>
             {row?.name}
           </Typography>
@@ -77,7 +78,7 @@ const EmployeesList = () => {
     isLoading: isLoadingEmployees,
     refetch: refetchEmployees,
     error: employeesError,
-  } = useGetEployeesList({ page, limit: pageSize, search: debouncedString });
+  } = useGetEmployeesList({ page, limit: pageSize, search: debouncedString });
 
   const { data } = employeesResponse ?? {};
 

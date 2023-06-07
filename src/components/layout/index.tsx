@@ -18,7 +18,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Header />
-      <main className={inter.className}>{children}</main>
+      <main className={inter.className} style={{ marginBottom: '5rem' }}>
+        {children}
+      </main>
     </>
   );
 };
