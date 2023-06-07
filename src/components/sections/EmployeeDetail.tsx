@@ -1,5 +1,5 @@
 import { useUpdateEmployeeDetail } from '@/hooks/useEmployees';
-import { EmployeeResponse } from '@/types/response';
+import { Benefit, EmployeeResponse } from '@/types/response';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LoadingButton } from '@mui/lab';
 import {
@@ -21,6 +21,8 @@ import React, { useEffect, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { array, number, object, string, TypeOf } from 'zod';
 import InputDependents from '../common/InputDependents';
+import { getDeductionPerBenefit } from '@/utils/paycheck';
+import { formatToUSDCurrency } from '@/utils/format';
 
 // ? Update employee Schema with Zod
 const updateEmployeeSchema = object({
@@ -95,10 +97,12 @@ const EmployeeDetail: React.FC<EmployeeDetailProps> = ({ data, onRefetch }) => {
     if (isSuccess) {
       onRefetch();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSuccess]);
 
   useEffect(() => {
     setValue('benefits', benefits);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [benefits]);
 
   return (
@@ -320,7 +324,11 @@ const EmployeeDetail: React.FC<EmployeeDetailProps> = ({ data, onRefetch }) => {
                 {['healthcare', 'retirement', 'wellness'].map((benefit) => (
                   <MenuItem key={benefit} value={benefit}>
                     <Checkbox checked={benefits.indexOf(benefit) > -1} />
-                    <ListItemText primary={benefit} />
+                    <ListItemText
+                      primary={`${benefit} - ${formatToUSDCurrency(
+                        getDeductionPerBenefit(benefit as Benefit)
+                      )}`}
+                    />
                   </MenuItem>
                 ))}
               </Select>
@@ -333,6 +341,7 @@ const EmployeeDetail: React.FC<EmployeeDetailProps> = ({ data, onRefetch }) => {
           </Grid>
 
           <Grid item xs={12}>
+            <InputLabel htmlFor="dependents">Dependents</InputLabel>
             <FormControl
               variant="outlined"
               sx={{

@@ -92,6 +92,7 @@ const EmployeesList = () => {
 
   useEffect(() => {
     refetchEmployees();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, debouncedString, pageSize]);
 
   return (
@@ -124,6 +125,7 @@ const EmployeesList = () => {
         <Card>
           <DataGrid
             autoHeight
+            disableSelectionOnClick
             rows={employeesData}
             getRowId={(row) => row.id}
             columns={columns}

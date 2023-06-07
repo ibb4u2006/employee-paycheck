@@ -4,10 +4,11 @@ import { EmployeeResponse, EmployeeResponsePage } from '@/types/response';
 import { getData } from '@/utils/server';
 import { NextApiRequest, NextApiResponse } from 'next';
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     // Read the existing data from the JSON file
-    let data: EmployeeResponse[] = await getData();
+    const data: EmployeeResponse[] = await getData();
 
     // Get pagination parameters from query string
     const page = Number(req.query.page) || 1;
@@ -45,6 +46,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
     res.status(200).json(response);
     // TODO: Implement error type
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }

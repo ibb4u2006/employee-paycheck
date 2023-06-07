@@ -78,7 +78,7 @@ export default function InputDependents({
     setDependents(newdependents);
   };
   const handleOnAddClick = () => {
-    if (tagRef.current) {
+    if (tagRef.current && tagRef.current.value !== '') {
       setDependents((prev) => [...prev, tagRef.current?.value as string]);
       tagRef.current.value = '';
     }
@@ -86,10 +86,12 @@ export default function InputDependents({
 
   useEffect(() => {
     setDependents(data);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     onAddDependents(dependents);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dependents]);
   return (
     <Box sx={{ flexGrow: 1 }}>

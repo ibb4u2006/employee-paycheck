@@ -1,5 +1,5 @@
 import React, { ErrorInfo } from 'react';
-import FallBackError from './FallbackError';
+import FallBackError from './FallBackError';
 
 interface Props {
   children: React.ReactNode;
@@ -16,6 +16,7 @@ class ErrorBoundary extends React.Component<Props, State> {
     // Define a state variable to track whether is an error or not
     this.state = { hasError: false };
   }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   static getDerivedStateFromError(error: Error) {
     // Update state so the next render will show the fallback UI
 
