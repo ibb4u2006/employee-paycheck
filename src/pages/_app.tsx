@@ -15,6 +15,7 @@ import Layout from '@/components/layout';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { useRouter } from 'next/router';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
+import ErrorBoundary from '@/components/errors/ErrorBoundary';
 interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
 }
@@ -47,11 +48,13 @@ const MyApp: React.FunctionComponent<MyAppProps> = (props) => {
       <CacheProvider value={emotionCache}>
         <ThemeProvider theme={lightTheme}>
           <CssBaseline />
-          <LoadingSpinner isLoading={isLoading}>
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          </LoadingSpinner>
+          <ErrorBoundary>
+            <LoadingSpinner isLoading={isLoading}>
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+            </LoadingSpinner>
+          </ErrorBoundary>
         </ThemeProvider>
       </CacheProvider>
     </QueryClientProvider>
